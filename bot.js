@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const dbURI = 'mongodb+srv://Damir1:damir270804@cluster0.ffeliay.mongodb.net/';
 
 // Подключение к базе данных
-mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true });
 
 // Обработчик события подключения
 mongoose.connection.on('connected', () => {
