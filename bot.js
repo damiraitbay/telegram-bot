@@ -1,34 +1,35 @@
 const TelegramBot = require('node-telegram-bot-api');
 const mongoose = require('mongoose');
 
-// Строка подключения к базе данных MongoDB
-const dbURI = 'mongodb://localhost:27017/yourDatabase';
+// Строка подключения к базе данных MongoDB Atlas
+const dbURI = 'mongodb+srv://Damir:damir270804@cluster0.ffeliay.mongodb.net/';
 
 // Подключение к базе данных
 mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true });
 
 // Обработчик события подключения
 mongoose.connection.on('connected', () => {
-    console.log('Connected to MongoDB');
+    console.log('Connected to MongoDB Atlas');
 });
 
 // Обработчик события ошибки подключения
 mongoose.connection.on('error', (err) => {
-    console.error('MongoDB connection error:', err);
+    console.error('MongoDB Atlas connection error:', err);
 });
 
 // Обработчик события отключения от базы данных
 mongoose.connection.on('disconnected', () => {
-    console.log('Disconnected from MongoDB');
+    console.log('Disconnected from MongoDB Atlas');
 });
 
 // Для гарантированного закрытия соединения при завершении работы приложения
 process.on('SIGINT', () => {
     mongoose.connection.close(() => {
-        console.log('MongoDB connection closed due to application termination');
+        console.log('MongoDB Atlas connection closed due to application termination');
         process.exit(0);
     });
 });
+
 const addressSchema = new mongoose.Schema({
     firstAddressText: String,
     secondAddressText: String,
