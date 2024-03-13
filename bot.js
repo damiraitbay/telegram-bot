@@ -2,7 +2,7 @@ const TelegramBot = require('node-telegram-bot-api');
 const mongoose = require('mongoose');
 
 // Строка подключения к базе данных MongoDB Atlas
-const dbURI = 'mongodb+srv://Damir1:damir270804@cluster0.ffeliay.mongodb.net/';
+const dbURI = 'mongodb+srv://Damir:damir270804@cluster0.ffeliay.mongodb.net/';
 
 // Подключение к базе данных
 mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true });
