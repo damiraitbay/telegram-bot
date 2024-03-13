@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const dbURI = 'mongodb+srv://damir:qwerty123@cluster0.brkmijq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 
 // Подключение к базе данных
-mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(dbURI);
 
 // Обработчик события подключения
 mongoose.connection.on('connected', () => {
@@ -29,6 +29,8 @@ process.on('SIGINT', () => {
         process.exit(0);
     });
 });
+
+
 
 const addressSchema = new mongoose.Schema({
     firstAddressText: String,
