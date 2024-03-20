@@ -1,6 +1,7 @@
 const TelegramBot = require('node-telegram-bot-api');
 const mongoose = require('mongoose');
 
+
 // Строка подключения к базе данных MongoDB Atlas
 const dbURI = 'mongodb+srv://damir:qwerty123@cluster0.brkmijq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 
@@ -1099,7 +1100,7 @@ bot.on('message', async(msg) => {
         case 'Баланс толтыру':
         case '/balance':
             if (String(chatId).substring(0, 5) === user_number) {
-                bot.sendMessage(chatId, `ID <b>${user_number}</b> \n\nСіздің балансыңызда <b>${balance1} ₸</b> \nБонус <b>0.00 ₸</b> \n\n<b>Баланс толтыру үшін,</b> төмендегі номерге аударма жасайсыз: \n- Kaspi Gold  / +77718466803 (Дамир А.) \n\nТөмендегі батырмаға өтіп, аударым <b>чегін жібересіз</b>`, {
+                bot.sendMessage(chatId, `ID <b>${user_number}</b> \n\nСіздің балансыңызда <b>${user.balance} ₸</b> \nБонус <b>0.00 ₸</b> \n\n<b>Баланс толтыру үшін,</b> төмендегі номерге аударма жасайсыз: \n- Kaspi Gold  / +77718466803 (Дамир А.) \n\nТөмендегі батырмаға өтіп, аударым <b>чегін жібересіз</b>`, {
                     parse_mode: "HTML",
                     ...options
 
@@ -1243,7 +1244,7 @@ bot.on('callback_query', async(callbackQuery) => {
         user.balance = user.balance - order_price * 0.1;
         balance1 = user.balance;
         await user.save();
-        if (String(chatId).substring(0, 5) === user_number && balance1 > 0) {
+        if (String(chatId).substring(0, 5) === user_number && user.balance > 0) {
             await bot.sendMessage(client, `${destination_message} \n\n${driver_information} \n\nЖүргізушіні күтіңіз. Сәттілік!`, { chat_id: chatId, parse_mode: "HTML" });
             await bot.sendMessage(chatId, `${forwardmessage} ${client_phone}
         \nҚабылдады: ${driver_name}`, { chat_id: chatId, parse_mode: "HTML", ...driver_done });
