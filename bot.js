@@ -55,6 +55,7 @@ const addressSchema2 = new mongoose.Schema({
     phone: String,
 });
 const addressSchema3 = new mongoose.Schema({
+    driver_id: String,
     firstname: String,
     secondname: String,
     carModel: String,
@@ -570,7 +571,7 @@ async function handlePartnerRequest(chatId) {
 
     await bot.sendMessage(chatId, 'Телефон номеріңіз?', contactRequest);
     const phone = await waitForUserResponse(chatId);
-    await bot.sendMessage(chatId, 'Kaspi Gold-тағы телефон номеріңіз? (Төлем үшін)');
+    await bot.sendMessage(chatId, 'Kaspi Gold-тағы телефон номеріңіз? (Төлем үшін), (Мыс. 87054651125)');
     const cardNumber = await waitForUserResponse(chatId);
     await bot.sendMessage(chatId, 'Көлігіңіздің моделі қандай? (Мыс. Тойота 40 қара түсті)');
     const carModel = await waitForUserResponse(chatId);
@@ -578,6 +579,7 @@ async function handlePartnerRequest(chatId) {
     const carNumber = await waitForUserResponse(chatId);
     phoneText = phone.contact ? phone.contact.phone_number.toString() : (phone.text && phone.text.length === 11 ? phone.text : '');
     const taxiDatess = new taxiDates({
+        driver_id: String(chatId).substring(0, 5),
         firstname: firstnameText.text,
         secondname: secondnameText.text,
         carModel: carModel.text,
@@ -612,7 +614,7 @@ async function handlePartnerRequest(chatId) {
     });
     bot.onText(/💳 KASPI GOLD/, async(msg) => {
         const chatId = msg.chat.id;
-        await bot.sendMessage(chatId, 'Kaspi Gold-тағы телефон номеріңіз? (Төлем үшін)');
+        await bot.sendMessage(chatId, 'Kaspi Gold-тағы телефон номеріңіз? (Төлем үшін), (Мыс. 87054651125)');
         bot.once('text', async(addressMsg) => {
             const newAddress = addressMsg.text;
             cardNumber.text = newAddress;
@@ -785,7 +787,7 @@ async function handlePartnerRequest(chatId) {
 \nӨтінімді растау үшін 
 - ✅ <b>Өтінімді растау</b> батырмасын таңдау қажет `, { parse_mode: "HTML", ...keyboard });
     contract = `<b>Келісімшарт</b> №${chatId} 
-    \nЖК "Бауыр Такси" және ${secondnameText.text} ${firstnameText.text} (арықарай Серіктес) арасындаға келісімшарт.
+    \nЖК "Жалағаш Такси" және ${secondnameText.text} ${firstnameText.text} (арықарай Серіктес) арасындаға келісімшарт.
     \n<b>Тапсырыстар чатына тіркелу арқылы </b>, сіз келесі бекітілген шарттарға өз келісіміңізді бересіз:  
 -Жеке мәліметтеріңізді өңдеуге және сақтауға 
 -Әр қабылдаған тапсырысыңыздан 10 % комиссия алынуына 
@@ -805,15 +807,9 @@ async function handlePartnerRequest(chatId) {
 \nЕңгізілген мәліметтердің растығына Серіктес <b>кепілдік береді.</b>
 \n<b>Назар аударыңыз!</b> Тапсырыстар чатына тіркелу арқылы келісімшартқа өз келісіміңізді бересіз 
 <b>Уақыты:</b> ${new Date().toLocaleString()}`
-    driver_information = `<b>Жүргізуші:</b> ${firstnameText.text} ${secondnameText.text}
-<b>Телефон:</b> ${phoneText}
-<b>Kaspi Gold:</b> ${cardNumber.text}
-\n<b>Көлік моделі:</b> ${carModel.text}
-<b>Көлік номері:</b> ${carNumber.text}`;
-    driver_name = `${firstnameText.text} ${secondnameText.text}`
 
 }
-let driver_name = ' ';
+
 let isDeliveryRequest = false;
 async function handleDeliveryRequest(chatId) {
     const chat = await bot.getChat(chatId);
@@ -1099,8 +1095,9 @@ bot.on('message', async(msg) => {
     switch (messageText) {
         case 'Баланс толтыру':
         case '/balance':
-            if (String(chatId).substring(0, 5) === user_number) {
-                bot.sendMessage(chatId, `ID <b>${user_number}</b> \n\nСіздің балансыңызда <b>${user.balance} ₸</b> \nБонус <b>0.00 ₸</b> \n\n<b>Баланс толтыру үшін,</b> төмендегі номерге аударма жасайсыз: \n- Kaspi Gold  / +77718466803 (Дамир А.) \n\nТөмендегі батырмаға өтіп, аударым <b>чегін жібересіз</b>`, {
+            let user1 = await User.findOne({ user_number: String(chatId).substring(0, 5) });
+            if (user1) {
+                bot.sendMessage(chatId, `ID <b>${user_number}</b> \n\nСіздің балансыңызда <b>${user1.balance} ₸</b> \nБонус <b>0.00 ₸</b> \n\n<b>Баланс толтыру үшін,</b> төмендегі номерге аударма жасайсыз: \n- Kaspi Gold  / +77718466803 (Дамир А.) \n\nТөмендегі батырмаға өтіп, аударым <b>чегін жібересіз</b>`, {
                     parse_mode: "HTML",
                     ...options
 
@@ -1136,7 +1133,7 @@ bot.on('message', async(msg) => {
         case '✅ Тапсырысты жіберу':
             client = chatId;
             await bot.sendMessage(destinationChatId, `${forwardmessage} жекеге жіберіледі`, { parse_mode: "HTML", ...apply });
-            await bot.sendMessage(chatId, `<b>Жауапты</b> күтіңіз \n\nТапсырыс өңделуде...  \n- Жүргізуші сізге хабарласатын болады  \n\n<b>${username}</b>,  Бауыр Такси сервисін қолданғаңызға Рахмет!`, { parse_mode: "HTML", ...discard });
+            await bot.sendMessage(chatId, `<b>Жауапты</b> күтіңіз \n\nТапсырыс өңделуде...  \n- Жүргізуші сізге хабарласатын болады  \n\n<b>${username}</b>,  Жалағаш Такси сервисін қолданғаңызға Рахмет!`, { parse_mode: "HTML", ...discard });
             break;
         case '✅ Өтінімді растау':
             await bot.sendMessage(chatId, contract, { parse_mode: "HTML", ...getOrder });
@@ -1203,7 +1200,6 @@ bot.on('message', async(msg) => {
     }
 });
 let destination_message = ' ';
-let driver_information = ' ';
 bot.on('callback_query', async(callbackQuery) => {
     const data = callbackQuery.data;
     const chatId = callbackQuery.from.id;
@@ -1223,15 +1219,16 @@ bot.on('callback_query', async(callbackQuery) => {
         }
     }
     if (data === 'change_message') {
-        bot.editMessageText(`<b>${ username }</b>, сіздің тапсырысыңыз кері қайтарылды. \n\n<b>- Бауыр Такси</b> қызметін қолданғаңызға рахмет!`, {
+        bot.editMessageText(`<b>${ username }</b>, сіздің тапсырысыңыз кері қайтарылды. \n\n<b>- Жалағаш Такси</b> қызметін қолданғаңызға рахмет!`, {
             chat_id: chatId,
             message_id: messageId,
             parse_mode: "HTML"
         });
     }
     if (data === 'done_message') {
+        let driver = await taxiDates.findOne({ driver_id: String(chatId).substring(0, 5) });
         bot.editMessageText(`${forwardmessage} ${client_phone}
-        \nҚабылдады: ${driver_name}`, {
+        \nҚабылдады: ${driver.firstname}`, {
             chat_id: chatId,
             message_id: messageId,
             parse_mode: "HTML",
@@ -1240,20 +1237,29 @@ bot.on('callback_query', async(callbackQuery) => {
 
     }
     if (data === 'apply_message') {
+        let driver = await taxiDates.findOne({ driver_id: String(chatId).substring(0, 5) });
         let user = await User.findOne({ user_number: String(chatId).substring(0, 5) });
         user.balance = user.balance - order_price * 0.1;
         balance1 = user.balance;
         await user.save();
-        if (String(chatId).substring(0, 5) === user_number && user.balance > 0) {
-            await bot.sendMessage(client, `${destination_message} \n\n${driver_information} \n\nЖүргізушіні күтіңіз. Сәттілік!`, { chat_id: chatId, parse_mode: "HTML" });
+        if (user && driver && user.balance > 0) {
+            await bot.sendMessage(client, `${destination_message} 
+        \n<b>Жүргізуші:</b> ${driver.firstname} ${driver.secondname} 
+<b>Телефон:</b> ${driver.phone}
+<b>Kaspi Gold:</b> ${driver.cardnumber}
+\n<b>Көлік Моделі:</b> ${driver.carModel}
+<b>Көлік номері:</b> ${driver.carNumber}
+        \nЖүргізушіні күтіңіз. Сәттілік!`, { chat_id: chatId, parse_mode: "HTML" });
             await bot.sendMessage(chatId, `${forwardmessage} ${client_phone}
-        \nҚабылдады: ${driver_name}`, { chat_id: chatId, parse_mode: "HTML", ...driver_done });
+        \nҚабылдады: ${driver.firstname} ${driver.secondname}`, { chat_id: chatId, parse_mode: "HTML", ...driver_done });
             bot.editMessageText(`${forwardmessage} жекеге жіберілді
-        \n<b>Тапсырысты қабылдады:</b> ${driver_name}`, {
+        \n<b>Тапсырысты қабылдады:</b> ${driver.firstname}`, {
                 chat_id: destinationChatId,
                 message_id: messageId,
                 parse_mode: "HTML"
             });
+        } else if (!driver) {
+            await bot.sendMessage(chatId, `Өтінемін өзіңіз туралы ақпаратты жазыңыз. Ол үшін /partner батырмасын басыңыз`, { chat_id: chatId, parse_mode: "HTML" });
         } else {
             await bot.sendMessage(chatId, `Сіздің балансыңыз тапсырысты қабылдау үшін жеткіліксіз.Балансыңызды толтыру үшін мәзірдегі <b>Баланс толтыру</b> (/balance) батырмасына өтіңіз.`, { chat_id: chatId, parse_mode: "HTML" });
 
