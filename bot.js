@@ -555,239 +555,9 @@ async function handleTaxiRequest(chatId) {
 }
 let isPartnerRequest = false;
 async function handlePartnerRequest(chatId) {
-    await bot.sendMessage(chatId, 'Есіміңіз:');
-    const firstnameText = await waitForUserResponse(chatId);
-    await bot.sendMessage(chatId, 'Тегіңізді жазыңыз:');
-    const secondnameText = await waitForUserResponse(chatId);
-    const contactRequest = {
-        reply_markup: {
-            keyboard: [
-                [{ text: '📱 Телефон номер жіберу', request_contact: true }]
-            ],
-            resize_keyboard: true,
-            one_time_keyboard: true
-        }
-    };
-
-    await bot.sendMessage(chatId, 'Телефон номеріңіз?', contactRequest);
-    const phone = await waitForUserResponse(chatId);
-    await bot.sendMessage(chatId, 'Kaspi Gold-тағы телефон номеріңіз? (Төлем үшін), (Мыс. 87054651125)');
-    const cardNumber = await waitForUserResponse(chatId);
-    await bot.sendMessage(chatId, 'Көлігіңіздің моделі қандай? (Мыс. Тойота 40 қара түсті)');
-    const carModel = await waitForUserResponse(chatId);
-    await bot.sendMessage(chatId, 'Көлігіңіздің номерін жазыңыз. (Мыс. 156-AFT)');
-    const carNumber = await waitForUserResponse(chatId);
-    phoneText = phone.contact ? phone.contact.phone_number.toString() : (phone.text && phone.text.length === 11 ? phone.text : '');
-    const taxiDatess = new taxiDates({
-        driver_id: String(chatId).substring(0, 5),
-        firstname: firstnameText.text,
-        secondname: secondnameText.text,
-        carModel: carModel.text,
-        carNumber: carNumber.text,
-        phone: phoneText,
-        cardnumber: cardNumber.text,
-
-    });
-    bot.onText(/🚹 ‍Есімі/, async(msg) => {
-        const chatId = msg.chat.id;
-        await bot.sendMessage(chatId, 'Есіміңізді жазыңыз');
-        bot.once('text', async(addressMsg) => {
-            const newAddress = addressMsg.text;
-            firstnameText.text = newAddress;
-            try {
-                await Address.findOneAndUpdate({}, { firstnameText: firstnameText.text });
-                console.log(firstnameText.text);
-                await bot.sendMessage(chatId, ` <b>Өтінімді</b> растаңыз 
-\n<b>Есімі:</b> ${firstnameText.text}
-<b>Тегі:</b> ${secondnameText.text} 
-<b>Көлік моделі:</b> ${carModel.text}
-<b>Көлік номері:</b> ${carNumber.text}  
-<b>Телефон:</b> ${ phoneText }
-<b>Kaspi Gold:</b> ${cardNumber.text} 
-\nӨтінімді растау үшін 
-- ✅ <b>Өтінімді растау</b> батырмасын таңдау қажет `, { parse_mode: "HTML", ...keyboard });
-            } catch (error) {
-                console.error('Ошибка при обновлении адреса:', error);
-                await bot.sendMessage(chatId, 'Произошла ошибка при изменении адреса.');
-            }
-        });
-    });
-    bot.onText(/💳 KASPI GOLD/, async(msg) => {
-        const chatId = msg.chat.id;
-        await bot.sendMessage(chatId, 'Kaspi Gold-тағы телефон номеріңіз? (Төлем үшін), (Мыс. 87054651125)');
-        bot.once('text', async(addressMsg) => {
-            const newAddress = addressMsg.text;
-            cardNumber.text = newAddress;
-            try {
-                await Address.findOneAndUpdate({}, { cardNumber: cardNumber.text });
-                console.log(cardNumber.text);
-                await bot.sendMessage(chatId, ` <b>Өтінімді</b> растаңыз 
-\n<b>Есімі:</b> ${firstnameText.text}
-<b>Тегі:</b> ${secondnameText.text} 
-<b>Көлік моделі:</b> ${carModel.text}
-<b>Көлік номері:</b> ${carNumber.text}  
-<b>Телефон:</b> ${ phoneText }
-<b>Kaspi Gold:</b> ${cardNumber.text} 
-\nӨтінімді растау үшін 
-- ✅ <b>Өтінімді растау</b> батырмасын таңдау қажет `, { parse_mode: "HTML", ...keyboard });
-            } catch (error) {
-                console.error('Ошибка при обновлении адреса:', error);
-                await bot.sendMessage(chatId, 'Произошла ошибка при изменении адреса.');
-            }
-        });
-    });
-    bot.onText(/🚹 ‍Тегі/, async(msg) => {
-        const chatId = msg.chat.id;
-        await bot.sendMessage(chatId, 'Тегіңізді жазыңыз (Фамилия)');
-        bot.once('text', async(addressMsg) => {
-            const newAddress = addressMsg.text;
-            secondnameText.text = newAddress;
-            try {
-                await Address.findOneAndUpdate({}, { secondnameText: cardNumber.text });
-                console.log(secondnameText.text);
-                await bot.sendMessage(chatId, ` <b>Өтінімді</b> растаңыз 
-\n<b>Есімі:</b> ${firstnameText.text}
-<b>Тегі:</b> ${secondnameText.text} 
-<b>Көлік моделі:</b> ${carModel.text}
-<b>Көлік номері:</b> ${carNumber.text}  
-<b>Телефон:</b> ${ phoneText }
-<b>Kaspi Gold:</b> ${cardNumber.text} 
-\nӨтінімді растау үшін 
-- ✅ <b>Өтінімді растау</b> батырмасын таңдау қажет `, { parse_mode: "HTML", ...keyboard });
-            } catch (error) {
-                console.error('Ошибка при обновлении адреса:', error);
-                await bot.sendMessage(chatId, 'Произошла ошибка при изменении адреса.');
-            }
-        });
-    });
-    bot.onText(/🚘 Көлік моделі/, async(msg) => {
-        const chatId = msg.chat.id;
-        await bot.sendMessage(chatId, 'Көлігіңіздің моделі қандай? (Мыс. Тойота 40 қара түсті)');
-        bot.once('text', async(addressMsg) => {
-            const newAddress = addressMsg.text;
-            carModel.text = newAddress;
-            try {
-                await Address.findOneAndUpdate({}, { carModel: carModel.text });
-                console.log(carModel.text);
-                await bot.sendMessage(chatId, ` <b>Өтінімді</b> растаңыз 
-\n<b>Есімі:</b> ${firstnameText.text}
-<b>Тегі:</b> ${secondnameText.text} 
-<b>Көлік моделі:</b> ${carModel.text}
-<b>Көлік номері:</b> ${carNumber.text}  
-<b>Телефон:</b> ${ phoneText }
-<b>Kaspi Gold:</b> ${cardNumber.text} 
-\nӨтінімді растау үшін 
-- ✅ <b>Өтінімді растау</b> батырмасын таңдау қажет `, { parse_mode: "HTML", ...keyboard });
-            } catch (error) {
-                console.error('Ошибка при обновлении адреса:', error);
-                await bot.sendMessage(chatId, 'Произошла ошибка при изменении адреса.');
-            }
-        });
-    });
-    bot.onText(/🚘 Көлік номері/, async(msg) => {
-        const chatId = msg.chat.id;
-        await bot.sendMessage(chatId, 'Көлігіңіздің номерін жазыңыз. (Мыс. 156-AFT)');
-        bot.once('text', async(addressMsg) => {
-            const newAddress = addressMsg.text;
-            carNumber.text = newAddress;
-            try {
-                await Address.findOneAndUpdate({}, { carNumber: carNumber.text });
-                console.log(carModel.text);
-                await bot.sendMessage(chatId, ` <b>Өтінімді</b> растаңыз 
-\n<b>Есімі:</b> ${firstnameText.text}
-<b>Тегі:</b> ${secondnameText.text} 
-<b>Көлік моделі:</b> ${carModel.text}
-<b>Көлік номері:</b> ${carNumber.text}  
-<b>Телефон:</b> ${ phoneText }
-<b>Kaspi Gold:</b> ${cardNumber.text} 
-\nӨтінімді растау үшін 
-- ✅ <b>Өтінімді растау</b> батырмасын таңдау қажет `, { parse_mode: "HTML", ...keyboard });
-            } catch (error) {
-                console.error('Ошибка при обновлении адреса:', error);
-                await bot.sendMessage(chatId, 'Произошла ошибка при изменении адреса.');
-            }
-        });
-    });
-    bot.onText(/📱 Телефон номері/, async(msg) => {
-        const chatId = msg.chat.id;
-        await bot.sendMessage(chatId, 'Телефон номеріңіз?', contactRequest);
-
-        bot.once('contact', async(contactMsg) => {
-            const chatId = contactMsg.chat.id;
-            if (contactMsg.text !== 'Телефон номеріңіз?') {
-                const newPhoneFromContact = contactMsg.contact.phone_number;
-                phoneText = newPhoneFromContact;
-                try {
-                    await Address.findOneAndUpdate({}, { phone: phoneText });
-                    await bot.sendMessage(chatId, ` <b>Өтінімді</b> растаңыз 
-\n<b>Есімі:</b> ${firstnameText.text}
-<b>Тегі:</b> ${secondnameText.text} 
-<b>Көлік моделі:</b> ${carModel.text}
-<b>Көлік номері:</b> ${carNumber.text}  
-<b>Телефон:</b> ${ phoneText }
-<b>Kaspi Gold:</b> ${cardNumber.text} 
-\nӨтінімді растау үшін 
-- ✅ <b>Өтінімді растау</b> батырмасын таңдау қажет `, { parse_mode: "HTML", ...keyboard });
-                } catch (error) {
-                    console.error('Ошибка при обновлении номера телефона:', error);
-                    await bot.sendMessage(chatId, 'Произошла ошибка при изменении номера телефона.');
-                }
-            }
-        });
-
-        bot.once('text', async(textMsg) => {
-            const chatId = textMsg.chat.id;
-
-            if (textMsg.text !== 'Телефон номеріңіз?' && textMsg.text.length === 11) {
-                const newPhoneFromText = textMsg.text;
-                phoneText = newPhoneFromText;
-                try {
-                    await Address.findOneAndUpdate({}, { phone: phoneText });
-                    await bot.sendMessage(chatId, ` <b>Өтінімді</b> растаңыз 
-\n<b>Есімі:</b> ${firstnameText.text}
-<b>Тегі:</b> ${secondnameText.text} 
-<b>Көлік моделі:</b> ${carModel.text}
-<b>Көлік номері:</b> ${carNumber.text}  
-<b>Телефон:</b> ${ phoneText }
-<b>Kaspi Gold:</b> ${cardNumber.text} 
-\nӨтінімді растау үшін 
-- ✅ <b>Өтінімді растау</b> батырмасын таңдау қажет `, { parse_mode: "HTML", ...keyboard });
-                } catch (error) {
-                    console.error('Ошибка при обновлении номера телефона:', error);
-                    await bot.sendMessage(chatId, 'Произошла ошибка при изменении номера телефона.');
-                }
-            }
-        });
-
-    });
-
-
-
-    const savedAddress = await taxiDatess.save();
-    savedAddressId = savedAddress._id;
-    const keyboard = {
-        reply_markup: {
-            keyboard: [
-                [{ text: '✅ Өтінімді растау' }],
-                [{ text: '🖊 Өзгеpіс енгізу' }],
-                [{ text: '❌ Өтінімді жою' }]
-            ],
-            resize_keyboard: true,
-            one_time_keyboard: true
-        }
-    };
-
-    await bot.sendMessage(chatId, ` <b>Өтінімді</b> растаңыз 
-\n<b>Есімі:</b> ${firstnameText.text}
-<b>Тегі:</b> ${secondnameText.text} 
-<b>Көлік моделі:</b> ${carModel.text}
-<b>Көлік номері:</b> ${carNumber.text}  
-<b>Телефон:</b> ${ phoneText }
-<b>Kaspi Gold:</b> ${cardNumber.text} 
-\nӨтінімді растау үшін 
-- ✅ <b>Өтінімді растау</b> батырмасын таңдау қажет `, { parse_mode: "HTML", ...keyboard });
+    let driver = await taxiDates.findOne({ driver_id: String(chatId).substring(0, 5) });
     contract = `<b>Келісімшарт</b> №${chatId} 
-    \nЖК "Жалағаш Такси" және ${secondnameText.text} ${firstnameText.text} (арықарай Серіктес) арасындаға келісімшарт.
+    \nЖК "Жалағаш Такси" және ${driver.secondname} ${driver.firstname} (арықарай Серіктес) арасындаға келісімшарт.
     \n<b>Тапсырыстар чатына тіркелу арқылы </b>, сіз келесі бекітілген шарттарға өз келісіміңізді бересіз:  
 -Жеке мәліметтеріңізді өңдеуге және сақтауға 
 -Әр қабылдаған тапсырысыңыздан 10 % комиссия алынуына 
@@ -807,6 +577,245 @@ async function handlePartnerRequest(chatId) {
 \nЕңгізілген мәліметтердің растығына Серіктес <b>кепілдік береді.</b>
 \n<b>Назар аударыңыз!</b> Тапсырыстар чатына тіркелу арқылы келісімшартқа өз келісіміңізді бересіз 
 <b>Уақыты:</b> ${new Date().toLocaleString()}`
+    const keyboard = {
+        reply_markup: {
+            keyboard: [
+                [{ text: '✅ Өтінімді растау' }],
+                [{ text: '🖊 Өзгеpіс енгізу' }],
+                [{ text: '❌ Өтінімді жою' }]
+            ],
+            resize_keyboard: true,
+            one_time_keyboard: true
+        }
+    };
+    const contactRequest = {
+        reply_markup: {
+            keyboard: [
+                [{ text: '📱 Телефон номер жіберу', request_contact: true }]
+            ],
+            resize_keyboard: true,
+            one_time_keyboard: true
+        }
+    };
+
+    if (!driver) {
+        await bot.sendMessage(chatId, 'Есіміңіз:');
+        const firstnameText = await waitForUserResponse(chatId);
+        await bot.sendMessage(chatId, 'Тегіңізді жазыңыз:');
+        const secondnameText = await waitForUserResponse(chatId);
+        await bot.sendMessage(chatId, 'Телефон номеріңіз?', contactRequest);
+        const phone = await waitForUserResponse(chatId);
+        await bot.sendMessage(chatId, 'Kaspi Gold-тағы телефон номеріңіз? (Төлем үшін), (Мыс. 87054651125)');
+        const cardNumber = await waitForUserResponse(chatId);
+        await bot.sendMessage(chatId, 'Көлігіңіздің моделі қандай? (Мыс. Тойота 40 қара түсті)');
+        const carModel = await waitForUserResponse(chatId);
+        await bot.sendMessage(chatId, 'Көлігіңіздің номерін жазыңыз. (Мыс. 156-AFT)');
+        const carNumber = await waitForUserResponse(chatId);
+        phoneText = phone.contact ? phone.contact.phone_number.toString() : (phone.text && phone.text.length === 11 ? phone.text : '');
+        driver = new taxiDates({
+            driver_id: String(chatId).substring(0, 5),
+            firstname: firstnameText.text,
+            secondname: secondnameText.text,
+            carModel: carModel.text,
+            carNumber: carNumber.text,
+            phone: phoneText,
+            cardnumber: cardNumber.text,
+
+        });
+        const savedAddress = await taxiDatess.save();
+        savedAddressId = savedAddress._id;
+
+        await bot.sendMessage(chatId, ` <b>Өтінімді</b> растаңыз 
+\n<b>Есімі:</b> ${firstnameText.text}
+<b>Тегі:</b> ${secondnameText.text} 
+<b>Көлік моделі:</b> ${carModel.text}
+<b>Көлік номері:</b> ${carNumber.text}  
+<b>Телефон:</b> ${ phoneText }
+<b>Kaspi Gold:</b> ${cardNumber.text} 
+\nӨтінімді растау үшін 
+- ✅ <b>Өтінімді растау</b> батырмасын таңдау қажет `, { parse_mode: "HTML", ...keyboard });
+
+    } else if (driver) {
+        await bot.sendMessage(chatId, ` <b>Өтінімді</b> растаңыз 
+\n<b>Есімі:</b> ${driver.firstname}
+<b>Тегі:</b> ${driver.secondname} 
+<b>Көлік моделі:</b> ${driver.carModel}
+<b>Көлік номері:</b> ${driver.carNumber}  
+<b>Телефон:</b> ${ driver.phone }
+<b>Kaspi Gold:</b> ${driver.cardnumber} 
+\nӨтінімді растау үшін 
+- ✅ <b>Өтінімді растау</b> батырмасын таңдау қажет `, { parse_mode: "HTML", ...keyboard });
+    }
+    bot.onText(/🚹 ‍Есімі/, async(msg) => {
+        const chatId = msg.chat.id;
+        await bot.sendMessage(chatId, 'Есіміңізді жазыңыз');
+        bot.once('text', async(addressMsg) => {
+            const newAddress = addressMsg.text;
+            driver.firstname = newAddress;
+            console.log(driver.firstname);
+            try {
+                await Address.findOneAndUpdate({}, { firstname: driver.firstname });
+                await driver.save();
+                await bot.sendMessage(chatId, ` <b>Өтінімді</b> растаңыз 
+\n<b>Есімі:</b> ${driver.firstname}
+<b>Тегі:</b> ${driver.secondname} 
+<b>Көлік моделі:</b> ${driver.carModel}
+<b>Көлік номері:</b> ${driver.carNumber}  
+<b>Телефон:</b> ${ driver.phone }
+<b>Kaspi Gold:</b> ${driver.cardnumber} 
+\nӨтінімді растау үшін 
+- ✅ <b>Өтінімді растау</b> батырмасын таңдау қажет `, { parse_mode: "HTML", ...keyboard });
+            } catch (error) {
+                console.error('Ошибка при обновлении адреса:', error);
+                await bot.sendMessage(chatId, 'Произошла ошибка при изменении адреса.');
+            }
+        });
+    });
+    bot.onText(/💳 KASPI GOLD/, async(msg) => {
+        const chatId = msg.chat.id;
+        await bot.sendMessage(chatId, 'Kaspi Gold-тағы телефон номеріңіз? (Төлем үшін), (Мыс. 87054651125)');
+        bot.once('text', async(addressMsg) => {
+            const newAddress = addressMsg.text;
+            driver.cardnumber = newAddress;
+            try {
+                await Address.findOneAndUpdate({}, { cardnumber: driver.cardnumber });
+                console.log(cardNumber.text);
+                await bot.sendMessage(chatId, ` <b>Өтінімді</b> растаңыз 
+\n<b>Есімі:</b> ${driver.firstname}
+<b>Тегі:</b> ${driver.secondname} 
+<b>Көлік моделі:</b> ${driver.carModel}
+<b>Көлік номері:</b> ${driver.carNumber}  
+<b>Телефон:</b> ${ driver.phone }
+<b>Kaspi Gold:</b> ${driver.cardnumber} 
+\nӨтінімді растау үшін 
+- ✅ <b>Өтінімді растау</b> батырмасын таңдау қажет `, { parse_mode: "HTML", ...keyboard });
+            } catch (error) {
+                console.error('Ошибка при обновлении адреса:', error);
+                await bot.sendMessage(chatId, 'Произошла ошибка при изменении адреса.');
+            }
+        });
+    });
+    bot.onText(/🚹 ‍Тегі/, async(msg) => {
+        const chatId = msg.chat.id;
+        await bot.sendMessage(chatId, 'Тегіңізді жазыңыз (Фамилия)');
+        bot.once('text', async(addressMsg) => {
+            const newAddress = addressMsg.text;
+            driver.secondname = newAddress;
+            try {
+                await Address.findOneAndUpdate({}, { secondname: driver.secondname });
+                await bot.sendMessage(chatId, ` <b>Өтінімді</b> растаңыз 
+\n<b>Есімі:</b> ${driver.firstname}
+<b>Тегі:</b> ${driver.secondname} 
+<b>Көлік моделі:</b> ${driver.carModel}
+<b>Көлік номері:</b> ${driver.carNumber}  
+<b>Телефон:</b> ${ driver.phone }
+<b>Kaspi Gold:</b> ${driver.cardnumber} 
+\nӨтінімді растау үшін 
+- ✅ <b>Өтінімді растау</b> батырмасын таңдау қажет `, { parse_mode: "HTML", ...keyboard });
+            } catch (error) {
+                console.error('Ошибка при обновлении адреса:', error);
+                await bot.sendMessage(chatId, 'Произошла ошибка при изменении адреса.');
+            }
+        });
+    });
+    bot.onText(/🚘 Көлік моделі/, async(msg) => {
+        const chatId = msg.chat.id;
+        await bot.sendMessage(chatId, 'Көлігіңіздің моделі қандай? (Мыс. Тойота 40 қара түсті)');
+        bot.once('text', async(addressMsg) => {
+            const newAddress = addressMsg.text;
+            driver.carModel = newAddress;
+            try {
+                await Address.findOneAndUpdate({}, { carModel: driver.carModel });
+                await bot.sendMessage(chatId, ` <b>Өтінімді</b> растаңыз 
+\n<b>Есімі:</b> ${driver.firstname}
+<b>Тегі:</b> ${driver.secondname} 
+<b>Көлік моделі:</b> ${driver.carModel}
+<b>Көлік номері:</b> ${driver.carNumber}  
+<b>Телефон:</b> ${ driver.phone }
+<b>Kaspi Gold:</b> ${driver.cardnumber} 
+\nӨтінімді растау үшін 
+- ✅ <b>Өтінімді растау</b> батырмасын таңдау қажет `, { parse_mode: "HTML", ...keyboard });
+            } catch (error) {
+                console.error('Ошибка при обновлении адреса:', error);
+                await bot.sendMessage(chatId, 'Произошла ошибка при изменении адреса.');
+            }
+        });
+    });
+    bot.onText(/🚘 Көлік номері/, async(msg) => {
+        const chatId = msg.chat.id;
+        await bot.sendMessage(chatId, 'Көлігіңіздің номерін жазыңыз. (Мыс. 156-AFT)');
+        bot.once('text', async(addressMsg) => {
+            const newAddress = addressMsg.text;
+            driver.carNumber = newAddress;
+            try {
+                await Address.findOneAndUpdate({}, { carNumber: driver.carNumber });
+                await bot.sendMessage(chatId, ` <b>Өтінімді</b> растаңыз 
+\n<b>Есімі:</b> ${driver.firstname}
+<b>Тегі:</b> ${driver.secondname} 
+<b>Көлік моделі:</b> ${driver.carModel}
+<b>Көлік номері:</b> ${driver.carNumber}  
+<b>Телефон:</b> ${ driver.phone }
+<b>Kaspi Gold:</b> ${driver.cardnumber} 
+\nӨтінімді растау үшін 
+- ✅ <b>Өтінімді растау</b> батырмасын таңдау қажет `, { parse_mode: "HTML", ...keyboard });
+            } catch (error) {
+                console.error('Ошибка при обновлении адреса:', error);
+                await bot.sendMessage(chatId, 'Произошла ошибка при изменении адреса.');
+            }
+        });
+    });
+    bot.onText(/📱 Телефон номері/, async(msg) => {
+        const chatId = msg.chat.id;
+        await bot.sendMessage(chatId, 'Телефон номеріңіз?', contactRequest);
+
+        bot.once('contact', async(contactMsg) => {
+            const chatId = contactMsg.chat.id;
+            if (contactMsg.text !== 'Телефон номеріңіз?') {
+                const newPhoneFromContact = contactMsg.contact.phone_number;
+                driver.phone = newPhoneFromContact;
+                try {
+                    await Address.findOneAndUpdate({}, { phone: driver.phone });
+                    await bot.sendMessage(chatId, ` <b>Өтінімді</b> растаңыз 
+                    \n<b>Есімі:</b> ${driver.firstname}
+<b>Тегі:</b> ${driver.secondname} 
+<b>Көлік моделі:</b> ${driver.carModel}
+<b>Көлік номері:</b> ${driver.carNumber}  
+<b>Телефон:</b> ${ driver.phone }
+<b>Kaspi Gold:</b> ${driver.cardnumber} 
+                    \nӨтінімді растау үшін 
+                    - ✅ <b>Өтінімді растау</b> батырмасын таңдау қажет `, { parse_mode: "HTML", ...keyboard });
+                } catch (error) {
+                    console.error('Ошибка при обновлении номера телефона:', error);
+                    await bot.sendMessage(chatId, 'Произошла ошибка при изменении номера телефона.');
+                }
+            }
+        });
+
+        bot.once('text', async(textMsg) => {
+            const chatId = textMsg.chat.id;
+
+            if (textMsg.text !== 'Телефон номеріңіз?' && textMsg.text.length === 11) {
+                const newPhoneFromText = textMsg.text;
+                driver.phone = newPhoneFromText;
+                try {
+                    await Address.findOneAndUpdate({}, { phone: driver.phone });
+                    await bot.sendMessage(chatId, ` <b>Өтінімді</b> растаңыз 
+                    \n<b>Есімі:</b> ${driver.firstname}
+<b>Тегі:</b> ${driver.secondname} 
+<b>Көлік моделі:</b> ${driver.carModel}
+<b>Көлік номері:</b> ${driver.carNumber}  
+<b>Телефон:</b> ${ driver.phone }
+<b>Kaspi Gold:</b> ${driver.cardnumber} 
+                    \nӨтінімді растау үшін 
+                    - ✅ <b>Өтінімді растау</b> батырмасын таңдау қажет `, { parse_mode: "HTML", ...keyboard });
+                } catch (error) {
+                    console.error('Ошибка при обновлении номера телефона:', error);
+                    await bot.sendMessage(chatId, 'Произошла ошибка при изменении номера телефона.');
+                }
+            }
+        });
+
+    });
 
 }
 
