@@ -124,7 +124,7 @@ const taxiDates = mongoose.model('taxiDates', addressSchema3);
 
 
 // Указываем токен, который выдал вам BotFather
-const token = '6485174645:AAG7JWYcsc6iyqaS478ZYty49l3qV5ymu1c';
+const token = '7135134154:AAEQUb2bSPIEDzwMfMYMLh3M6_EIaFzCHLY';
 
 // Создаем экземпляр бота
 const bot = new TelegramBot(token, { polling: true });
@@ -223,7 +223,7 @@ async function handleTaxiForQyzylordaRequest(chatId) {
     const phone = await waitForUserResponse(chatId);
 
 
-    bot.onText(/🌎 Шығатын мекен-жай./, async(msg) => {
+    bot.onText(/🌎 Шығaтын мекен-жай./, async(msg) => {
         const chatId = msg.chat.id;
         await bot.sendMessage(chatId, 'Шығатын мекен-жайыңыз?');
         bot.once('text', async(addressMsg) => {
@@ -664,6 +664,7 @@ async function handlePartnerRequest(chatId) {
 <b>Телефон:</b> ${ driver.phone }
 <b>Kaspi Gold:</b> ${driver.cardnumber} 
 \nӨтінімді растау үшін 
+
 - ✅ <b>Өтінімді растау</b> батырмасын таңдау қажет `, { parse_mode: "HTML", ...keyboard });
             } catch (error) {
                 console.error('Ошибка при обновлении адреса:', error);
@@ -679,7 +680,6 @@ async function handlePartnerRequest(chatId) {
             driver.cardnumber = newAddress;
             try {
                 await Address.findOneAndUpdate({}, { cardnumber: driver.cardnumber });
-                console.log(cardNumber.text);
                 await bot.sendMessage(chatId, ` <b>Өтінімді</b> растаңыз 
 \n<b>Есімі:</b> ${driver.firstname}
 <b>Тегі:</b> ${driver.secondname} 
@@ -764,7 +764,7 @@ async function handlePartnerRequest(chatId) {
             }
         });
     });
-    bot.onText(/📱 Телефон номері/, async(msg) => {
+    bot.onText(/📱 Телефон номeрі/, async(msg) => {
         const chatId = msg.chat.id;
         await bot.sendMessage(chatId, 'Телефон номеріңіз?', contactRequest);
 
@@ -867,16 +867,14 @@ async function handleDeliveryRequest(chatId) {
             try {
                 await Address.findOneAndUpdate({}, { firstAddressText: firstMessage.text });
                 console.log(firstMessage.text);
-                await bot.sendMessage(chatId, `
-    Тапсырысты жіберу үшін < b > растау қажет < /b> \
-    n < b > Қайдан: < /b> ${firstMessage.text} <
-        b > Қайда: < /b> ${secondMessage.text}  <
-        b > Қосымша ақпарат: < /b> ${type.text} <
-        b > Бағасы: < /b> ${price.text} ₸  <
-        b > Телефон: < /b> ${phoneText}\
-    nТапсырысты растау үшін
-        -
-        ✅ < b > Тапсырысты жіберу < /b> батырмасын таңдау қажет`, { parse_mode: "HTML", ...keyboard });
+                await bot.sendMessage(chatId, `Тапсырысты жіберу үшін <b>растау қажет</b> 
+                \n <b>Қайдан:</b> ${firstMessage.text} 
+<b>Қайда:</b> ${secondMessage.text}  
+<b>Қосымша ақпарат:</b> ${type.text} 
+<b>Бағасы:</b> ${price.text} ₸  
+<b>Телефон:</b> ${phoneText}
+\nТапсырысты растау үшін
+-✅ <b>Тапсырысты жіберу</b> батырмасын таңдау қажет`, { parse_mode: "HTML", ...keyboard });
             } catch (error) {
                 console.error('Ошибка при обновлении адреса:', error);
                 await bot.sendMessage(chatId, 'Произошла ошибка при изменении адреса.');
@@ -1289,7 +1287,7 @@ bot.onText(/🖊 Өзгеріс енгізу/, async(msg) => {
     const keyboard = {
         reply_markup: {
             keyboard: [
-                [{ text: '🌎 Шығатын мекен-жай.' }],
+                [{ text: '🌎 Шығaтын мекен-жай.' }],
                 [{ text: '🌎 Баратын мекен-жай.' }],
                 [{ text: '💵 Жол ақысы.' }],
                 [{ text: '📱 Телефон номер.' }],
@@ -1326,7 +1324,7 @@ bot.onText(/🖊 Өзгеpіс енгізу/, async(msg) => {
             keyboard: [
                 [{ text: '🚹 ‍Есімі' }],
                 [{ text: '🚹 ‍Тегі' }],
-                [{ text: '📱 Телефон номері' }],
+                [{ text: '📱 Телефон номeрі' }],
                 [{ text: '💳 KASPI GOLD' }],
                 [{ text: '🚘 Көлік моделі' }],
                 [{ text: '🚘 Көлік номері' }]
