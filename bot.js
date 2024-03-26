@@ -124,7 +124,7 @@ const taxiDates = mongoose.model('taxiDates', addressSchema3);
 
 
 // Указываем токен, который выдал вам BotFather
-const token = '7058257956:AAGn-P8WiplGNtPhG-j3cVIXCHCAbIpaCZw';
+const token = '6853373071:AAHnzvQv4Udt1CVatVYRMH4lza74J2xFAu0';
 
 // Создаем экземпляр бота
 const bot = new TelegramBot(token, { polling: true });
@@ -144,6 +144,7 @@ bot.on('message', (msg) => {
 
 // Функция отправки кнопок для Региона 1
 function sendButtonsForRegion1(chatId) {
+    console.log(chatId);
     const keyboard = {
         reply_markup: {
             keyboard: [
@@ -1067,7 +1068,7 @@ async function handleDeliveryRequest(chatId) {
 }
 let forwardmessage = '';
 let contract = ' ';
-let destinationChatId = '-4094544621';
+let destinationChatId = '-1001999544864';
 let client = ' ';
 let client_phone = ' ';
 let order_price = ' ';
